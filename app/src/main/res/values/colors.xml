@@ -3,5 +3,11 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
+    <color name="myColorPrimary">#7b1fa2</color>
+    <color name="myColorPrimaryDark">#4a0072</color>
+    <color name="myColorAccent">#1b5e20</color>
+    <color name="myColorText">#2c3e50</color>
+    <color name="myColorWhite">#ffffff</color>
+    <color name="myColorTransparente">#00000000</color>
     <color name="colorFondoSplash">#FFFFFF</color>
 </resources>
