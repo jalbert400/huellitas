@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -17,6 +18,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.textfield.TextInputEditText;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +29,7 @@ public class RegistrarClienteActivity extends AppCompatActivity {
     Button buttonRegistrar;
     TextInputEditText textName,textEmail,textPassword;
     String name,email,password;
+    ProgressBar loadingBar;
     private static final String URL_SERVICE = "https://gtsgroup.com.pe/tiendaGlobal/insertar.php";
 
     @Override
@@ -36,13 +41,14 @@ public class RegistrarClienteActivity extends AppCompatActivity {
         textName = findViewById(R.id.textRegistroNombre);
         textEmail = findViewById(R.id.textRegistroEmail);
         textPassword = findViewById(R.id.textRegistroPassword);
+        loadingBar = findViewById(R.id.loadingBar);
 
         buttonRegistrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                name = textName.getText().toString();
-                email = textEmail.getText().toString();
-                password = textPassword.getText().toString();
+                name = textName.getText().toString().trim();
+                email = textEmail.getText().toString().trim();
+                password = textPassword.getText().toString().trim();
                 if(!name.isEmpty() && !email.isEmpty() && !password.isEmpty()){
                     registrarUsuario(URL_SERVICE);
                 }else{
@@ -53,18 +59,33 @@ public class RegistrarClienteActivity extends AppCompatActivity {
     }
 
     private void registrarUsuario(String URL) {
-
+        loadingBar.setVisibility(View.VISIBLE);
         StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    String success = jsonObject.getString("success");
+                    if (success.equals("1")){
+                        Toast.makeText(RegistrarClienteActivity.this,"Registro exitoso",Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(RegistrarClienteActivity.this,ListCategoriesActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                }catch (JSONException e){
+                    e.printStackTrace();
+                    Toast.makeText(RegistrarClienteActivity.this,"Registro incorreccto",Toast.LENGTH_SHORT).show();
+                }
+                /*
                 if(!response.isEmpty()){
-                    //guardarPreferencias();
                     Intent intent = new Intent(RegistrarClienteActivity.this,ListCategoriesActivity.class);
                     startActivity(intent);
                     finish();
                 }else{
                     Toast.makeText(RegistrarClienteActivity.this,"No se ha guardado correctamente el registro",Toast.LENGTH_SHORT).show();
                 }
+                */
             }
         }, new Response.ErrorListener() {
             @Override
