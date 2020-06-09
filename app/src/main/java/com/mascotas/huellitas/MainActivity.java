@@ -2,7 +2,9 @@ package com.mascotas.huellitas;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -27,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     Button buttonLogin;
     TextInputEditText editTextMail;
     TextInputEditText editTextPass;
+    String email,password;
     private static final String URL_SERVICE = "https://gtsgroup.com.pe/tiendaGlobal/test.php";
 
     @Override
@@ -38,10 +41,19 @@ public class MainActivity extends AppCompatActivity {
         editTextMail = findViewById(R.id.textClienteEmail);
         editTextPass = findViewById(R.id.textClientePass);
 
+        recuperarPreferencias();
+
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                serviceUsuario(URL_SERVICE);
+                email = editTextMail.getText().toString();
+                password = editTextPass.getText().toString();
+                if(!email.isEmpty() && !password.isEmpty()){
+                    serviceUsuario(URL_SERVICE);
+                }else{
+                    Toast.makeText(MainActivity.this,"Debe ingresar los campos de email y password",Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
@@ -53,8 +65,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 if(!response.isEmpty()){
+                    guardarPreferencias();
                     Intent intent = new Intent(MainActivity.this,ListCategoriesActivity.class);
                     startActivity(intent);
+                    finish();
                 }else{
                     Toast.makeText(MainActivity.this,"El usuario y password incorrectos",Toast.LENGTH_SHORT).show();
                 }
@@ -68,8 +82,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> parametros = new HashMap<String, String>();
-                parametros.put("email", editTextMail.getText().toString());
-                parametros.put("password", editTextPass.getText().toString());
+                //parametros.put("email", editTextMail.getText().toString());
+                //parametros.put("password", editTextPass.getText().toString());
+                parametros.put("email", email);
+                parametros.put("password", password);
                 return parametros;
             }
         };
@@ -79,6 +95,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void guardarPreferencias(){
+        SharedPreferences preferences = getSharedPreferences("preferenciasLogin", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("email", email);
+        editor.putString("password", password);
+        editor.putBoolean("sesion", true);
+        editor.commit();
+    }
+
+    private void recuperarPreferencias(){
+        SharedPreferences preferences = getSharedPreferences("preferenciasLogin", Context.MODE_PRIVATE);
+        editTextMail.setText(preferences.getString("email","micorreo@gmail.com"));
+        editTextPass.setText(preferences.getString("password", "12345678"));
+    }
 
     public void OpenRecoveryPasswordPage(View view) {
         startActivity(new Intent(MainActivity.this,RecuperarPasswordClienteActivity.class));
