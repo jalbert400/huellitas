@@ -18,6 +18,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.textfield.TextInputEditText;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -67,8 +68,11 @@ public class RegistrarClienteActivity extends AppCompatActivity {
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     String success = jsonObject.getString("success");
+                    String name = jsonObject.getString("name");
+                    String email = jsonObject.getString("email");
+                    //JSONArray jsonArray = jsonObject.getJSONArray("login");
                     if (success.equals("1")){
-                        Toast.makeText(RegistrarClienteActivity.this,"Registro exitoso",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RegistrarClienteActivity.this,"Registro exitoso: "+name,Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(RegistrarClienteActivity.this,ListCategoriesActivity.class);
                         startActivity(intent);
                         finish();
